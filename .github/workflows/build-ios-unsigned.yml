@@ -1,4 +1,4 @@
-﻿name: Build unsigned iOS IPA
+name: Build unsigned iOS IPA
 
 on:
   workflow_dispatch:
@@ -30,6 +30,14 @@ jobs:
 
       - name: Disable Swift Package Manager
         run: flutter config --no-enable-swift-package-manager
+
+      - name: Select Xcode 26
+        run: |
+          XC="$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          echo "using $XC"
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
 
       - name: Inject secrets fallback
         shell: bash
