@@ -1,0 +1,21 @@
+name: Probe runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: runner label
+        required: true
+        default: macos-15
+
+jobs:
+  probe:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Info
+        run: |
+          uname -m
+          sw_vers
+          xcodebuild -version || true
+          ls /Applications | grep -i xcode || true
+          df -h /
