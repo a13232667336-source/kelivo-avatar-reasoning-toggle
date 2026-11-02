@@ -1,4 +1,4 @@
-name: Build unsigned iOS IPA
+﻿name: Build unsigned iOS IPA
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ env:
 jobs:
   ios:
     name: Build iOS (no codesign)
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     permissions:
       contents: write
 
