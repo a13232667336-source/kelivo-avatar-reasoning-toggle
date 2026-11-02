@@ -513,7 +513,16 @@ main() {
     [ -n "$headers_from" ] || log_error "no SDK built"
     copy_headers "$headers_from"
     build_vdso_once
-    build_host_tools
+    # Asbestos ships guest-arm64 gadgets for an aarch64 host only, so the
+    # host tools (fakefsify / ish) cannot be built on x86_64 macs. When the
+    # prebuilt alpine-rootfs.zip is bundled they are not needed either: the
+    # iOS slices and the guest VDSO above are plain cross-compiles.
+    if [ "$(uname -m)" = "arm64" ] || { [ -x "$OUTPUT_DIR/fakefsify" ] && [ -x "$OUTPUT_DIR/ish" ]; }; then
+        build_host_tools
+    else
+        log_info "host is $(uname -m): skipping host iSH tools (no guest-arm64 gadgets for x86_64)"
+        log_info "bundled alpine-rootfs.zip is used as-is"
+    fi
     # Keep the compatibility scripts exactly aligned with the pinned iSH.
     local patch_bundle="$ISH_DIR/app/RootfsPatch.bundle"
     [ -s "$patch_bundle/manifest.plist" ] || log_error "RootfsPatch manifest missing"

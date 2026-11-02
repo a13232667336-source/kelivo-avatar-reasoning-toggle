@@ -106,7 +106,10 @@ for f in "$SLICE_DIR/libish.a" "$SLICE_DIR/libish_emu.a" "$SLICE_DIR/libfakefs.a
         break
     fi
 done
-if [ ! -x "$BUILD_DIR/fakefsify" ] || [ ! -x "$BUILD_DIR/ish" ]; then
+# Host tools only exist on aarch64 macs (asbestos has no guest-arm64 gadgets
+# for x86_64). On other hosts they are skipped, not treated as stale, so a
+# bundled alpine-rootfs.zip keeps the build self-contained.
+if [ "$(uname -m)" = "arm64" ] && { [ ! -x "$BUILD_DIR/fakefsify" ] || [ ! -x "$BUILD_DIR/ish" ]; }; then
     need_ish=1
 fi
 if [ ! -d "$BUILD_DIR/include" ] || [ -z "$(ls -A "$BUILD_DIR/include" 2>/dev/null)" ]; then
