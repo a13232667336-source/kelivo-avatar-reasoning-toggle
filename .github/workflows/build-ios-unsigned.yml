@@ -1,0 +1,79 @@
+name: Build unsigned iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+env:
+  FLUTTER_VERSION: '3.47.6'
+
+jobs:
+  ios:
+    name: Build iOS (no codesign)
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Disable Swift Package Manager
+        run: flutter config --no-enable-swift-package-manager
+
+      - name: Inject secrets fallback
+        shell: bash
+        run: |
+          mkdir -p lib/secrets
+          cat > lib/secrets/fallback.dart <<'EOF'
+          const String siliconflowFallbackKey = '';
+          EOF
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | tr -d ' ')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "building $VERSION"
+
+      - name: Cache iSH sandbox artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/sandbox/build
+            ios/sandbox/resources/alpine-rootfs.zip
+            ios/sandbox/resources/libvdso.so.elf
+          key: ${{ runner.os }}-${{ runner.arch }}-ish-sandbox-${{ hashFiles('ios/sandbox/build_ish.sh', 'ios/sandbox/ensure_artifacts.sh', 'ios/sandbox/patches/*.patch', 'ios/sandbox/prepare_alpine_rootfs.sh', 'ios/sandbox/resources/VERSION') }}
+
+      - name: Ensure script permissions
+        run: chmod +x ios/sandbox/*.sh
+
+      - name: Prepare iSH sandbox artifacts
+        run: |
+          brew install meson ninja llvm lld libarchive
+          bash ios/sandbox/ensure_artifacts.sh
+
+      - name: Build iOS (unsigned)
+        run: |
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -qry ../../../Kelivo_ios_${VERSION}.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-IPA
+          path: Kelivo_ios_*.ipa
+          retention-days: 14
