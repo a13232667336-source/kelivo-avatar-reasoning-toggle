@@ -86,7 +86,7 @@ class ChatInputOverlayLayout extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
               if (foreground != null) Positioned.fill(child: foreground!),
             ],
           ),
