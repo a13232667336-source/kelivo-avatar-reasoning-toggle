@@ -51,12 +51,20 @@ class ChatInputOverlayLayout extends StatelessWidget {
                   ),
                 )
               else if (!backgroundImageActive)
+                // Hard edge: an opaque band that ends exactly on the app bar's
+                // bottom edge. The transcript is cut at that line instead of
+                // dissolving into the title area.
                 Positioned(
                   left: 0,
                   right: 0,
                   top: 0,
-                  height: topInset + _topOverlayTailHeight,
-                  child: const _TopOverlayFade(),
+                  height: topInset,
+                  child: IgnorePointer(
+                    key: const Key('chat-input-overlay-top-fade'),
+                    child: ColoredBox(
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                  ),
                 ),
               if (backgroundImageActive && topBackground != null)
                 Positioned.fill(
@@ -79,14 +87,6 @@ class ChatInputOverlayLayout extends StatelessWidget {
                     ),
                   ),
                 )
-              else if (!backgroundImageActive)
-                const Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: _bottomOverlayFadeHeight,
-                  child: _BottomOverlayFade(),
-                ),
               if (foreground != null) Positioned.fill(child: foreground!),
             ],
           ),
@@ -95,7 +95,27 @@ class ChatInputOverlayLayout extends StatelessWidget {
         // but never behind it.
         Positioned.fill(
           top: topInset + _bottomOverlayTopGap,
-          child: Align(alignment: Alignment.bottomCenter, child: bottomOverlay),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Stack(
+              children: [
+                // Opaque plate that matches the composer's own box, so the
+                // transcript ends at its top edge rather than fading out over
+                // the 180px above it.
+                Positioned.fill(
+                  child: IgnorePointer(
+                    key: const Key('chat-input-overlay-bottom-plate'),
+                    child: backgroundImageActive
+                        ? const _BottomOverlayFade()
+                        : ColoredBox(
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                  ),
+                ),
+                bottomOverlay,
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -232,33 +252,6 @@ class _BottomBackgroundFade extends StatelessWidget {
         );
       },
       child: child,
-    );
-  }
-}
-
-class _TopOverlayFade extends StatelessWidget {
-  const _TopOverlayFade();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final surface = theme.colorScheme.surface;
-    final gradient = LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      stops: const [0.0, 0.48, 0.78, 1.0],
-      colors: [
-        surface.withValues(alpha: 1.0),
-        surface.withValues(alpha: isDark ? 0.96 : 0.99),
-        surface.withValues(alpha: isDark ? 0.74 : 0.88),
-        surface.withValues(alpha: 0),
-      ],
-    );
-
-    return IgnorePointer(
-      key: const Key('chat-input-overlay-top-fade'),
-      child: DecoratedBox(decoration: BoxDecoration(gradient: gradient)),
     );
   }
 }

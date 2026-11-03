@@ -151,9 +151,9 @@ class HomeMobileScaffold extends StatelessWidget {
         defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.linux;
-    final useNewAssistantAvatarUx = context
-        .watch<SettingsProvider>()
-        .useNewAssistantAvatarUx;
+    final appBarSettings = context.watch<SettingsProvider>();
+    final useNewAssistantAvatarUx = appBarSettings.useNewAssistantAvatarUx;
+    final hideChatHeaderTitle = appBarSettings.hideChatHeaderTitle;
 
     return AppBar(
       systemOverlayStyle: (Theme.of(context).brightness == Brightness.dark)
@@ -191,7 +191,9 @@ class HomeMobileScaffold extends StatelessWidget {
         },
       ),
       titleSpacing: 2,
-      title: useNewAssistantAvatarUx
+      title: hideChatHeaderTitle
+          ? const SizedBox.shrink()
+          : useNewAssistantAvatarUx
           ? Row(
               children: [
                 _buildAssistantTitleAvatar(context),

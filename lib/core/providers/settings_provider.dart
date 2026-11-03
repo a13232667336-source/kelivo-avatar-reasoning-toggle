@@ -211,6 +211,8 @@ class SettingsProvider extends ChangeNotifier {
       'display_show_user_message_actions_v1';
   static const String _displayShowThinkingCardsKey =
       'display_show_thinking_cards_v1';
+  static const String _displayHideChatHeaderTitleKey =
+      'display_hide_chat_header_title_v1';
   static const String _displayShowToolCardsKey = 'display_show_tool_cards_v1';
   static const String _displayShowProducedFilesKey =
       'display_show_produced_files_v1';
@@ -1002,6 +1004,8 @@ class SettingsProvider extends ChangeNotifier {
     _showUserMessageActions =
         prefs.getBool(_displayShowUserMessageActionsKey) ?? true;
     _showThinkingCards = prefs.getBool(_displayShowThinkingCardsKey) ?? true;
+    _hideChatHeaderTitle =
+        prefs.getBool(_displayHideChatHeaderTitleKey) ?? false;
     _showToolCards = prefs.getBool(_displayShowToolCardsKey) ?? true;
     _showProducedFiles = prefs.getBool(_displayShowProducedFilesKey) ?? true;
     _showReasoningLevelBadge =
@@ -4692,6 +4696,19 @@ Requirements:
     await _preferences.setBool(_displayShowTotalTokensKey, v);
   }
 
+  // Display: hide the conversation title + model line in the chat app bar.
+  // The leading menu button and the trailing actions stay, so navigation keeps
+  // working while the header carries no text at all.
+  bool _hideChatHeaderTitle = false;
+  bool get hideChatHeaderTitle => _hideChatHeaderTitle;
+  Future<void> setHideChatHeaderTitle(bool v) async {
+    if (_hideChatHeaderTitle == v) return;
+    _hideChatHeaderTitle = v;
+    notifyListeners();
+    final prefs = _preferences;
+    await prefs.setBool(_displayHideChatHeaderTitleKey, v);
+  }
+
   // Runtime-only "clean reading" gate toggled by tapping the assistant avatar
   // in a chat message header. It never rewrites the persisted display
   // preferences: it just masks them so the thinking / tool cards vanish from
@@ -5887,6 +5904,7 @@ Requirements:
     copy._showModelName = _showModelName;
     copy._showModelTimestamp = _showModelTimestamp;
     copy._showThinkingCards = _showThinkingCards;
+    copy._hideChatHeaderTitle = _hideChatHeaderTitle;
     copy._showToolCards = _showToolCards;
     copy._showProducedFiles = _showProducedFiles;
     copy._showReasoningLevelBadge = _showReasoningLevelBadge;

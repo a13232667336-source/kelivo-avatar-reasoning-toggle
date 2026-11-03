@@ -338,9 +338,9 @@ class HomeDesktopScaffold extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context, ColorScheme cs) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final useNewAssistantAvatarUx = context
-        .watch<SettingsProvider>()
-        .useNewAssistantAvatarUx;
+    final appBarSettings = context.watch<SettingsProvider>();
+    if (appBarSettings.hideChatHeaderTitle) return const SizedBox.shrink();
+    final useNewAssistantAvatarUx = appBarSettings.useNewAssistantAvatarUx;
     final currentAssistant = context
         .watch<AssistantProvider>()
         .currentAssistant;

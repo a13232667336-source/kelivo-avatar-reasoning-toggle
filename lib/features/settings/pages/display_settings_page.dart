@@ -1447,6 +1447,16 @@ class ChatItemDisplaySettingsPage extends StatelessWidget {
               _iosDivider(context),
               _iosSwitchRow(
                 context,
+                icon: Lucide.Type,
+                label: '隐藏标题与模型名',
+                tip: '聊天页顶部只保留按钮，不显示会话标题和下方模型名',
+                value: sp.hideChatHeaderTitle,
+                onChanged: (v) =>
+                    context.read<SettingsProvider>().setHideChatHeaderTitle(v),
+              ),
+              _iosDivider(context),
+              _iosSwitchRow(
+                context,
                 icon: Lucide.Sparkles,
                 label: l10n.displaySettingsPageShowThinkingCardsTitle,
                 tip: l10n.displaySettingsPageShowThinkingCardsSubtitle,
