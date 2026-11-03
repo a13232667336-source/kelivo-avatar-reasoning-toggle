@@ -14,6 +14,7 @@ import '../../../shared/widgets/snackbar.dart';
 import '../../../core/models/chat_input_data.dart';
 import '../../../core/utils/multimodal_input_utils.dart';
 import '../widgets/chat_input_bar.dart';
+import '../../chat/pages/image_annotate_page.dart';
 
 /// 文件选取和上传服务
 ///
@@ -179,7 +180,8 @@ class FileUploadService {
         if (toCopy.isEmpty) return;
         final croppedFiles = await _maybeCropImages(toCopy);
         if (croppedFiles.isEmpty) return;
-        _enqueuePickedImages(croppedFiles, target);
+        final edited = await _maybeAnnotateImages(croppedFiles);
+        _enqueuePickedImages(edited, target);
         return;
       }
 
@@ -188,7 +190,8 @@ class FileUploadService {
       if (files.isEmpty) return;
       final croppedFiles = await _maybeCropImages(files);
       if (croppedFiles.isEmpty) return;
-      _enqueuePickedImages(croppedFiles, target);
+      final edited = await _maybeAnnotateImages(croppedFiles);
+      _enqueuePickedImages(edited, target);
     } catch (_) {}
   }
 
@@ -229,8 +232,9 @@ class FileUploadService {
       if (file == null) return;
       final croppedFiles = await _maybeCropImages([file]);
       if (croppedFiles.isEmpty) return;
+      final annotated = await _maybeAnnotateImages(croppedFiles);
       if (!context.mounted) return;
-      _enqueuePickedImages(croppedFiles, target);
+      _enqueuePickedImages(edited, target);
     } catch (e) {
       try {
         if (!context.mounted) return;
@@ -243,6 +247,19 @@ class FileUploadService {
         );
       } catch (_) {}
     }
+  }
+
+  /// Opens the markup sheet (pen + colours) for a single picked picture.
+  /// Multi-picks skip it: one editor per photo would be a wall of screens.
+  Future<List<XFile>> _maybeAnnotateImages(List<XFile> files) async {
+    if (files.length != 1) return files;
+    final path = files.first.path;
+    if (path.isEmpty) return files;
+    final context = getContext();
+    if (!context.mounted) return files;
+    final edited = await ImageAnnotatePage.open(context, path);
+    if (edited == null || edited.isEmpty) return files;
+    return <XFile>[XFile(edited)];
   }
 
   Future<List<XFile>> _maybeCropImages(List<XFile> files) async {

@@ -989,11 +989,11 @@ class SettingsProvider extends ChangeNotifier {
     _showUserAvatar = prefs.getBool(_displayShowUserAvatarKey) ?? true;
     _showModelIcon = prefs.getBool(_displayShowModelIconKey) ?? true;
     _showModelNameTimestamp =
-        prefs.getBool(_displayShowModelNameTimestampKey) ?? true;
-    _showTokenStats = prefs.getBool(_displayShowTokenStatsKey) ?? true;
+        prefs.getBool(_displayShowModelNameTimestampKey) ?? false;
+    _showTokenStats = prefs.getBool(_displayShowTokenStatsKey) ?? false;
     _showTotalTokens = prefs.getBool(_displayShowTotalTokensKey) ?? false;
     _showUserNameTimestamp =
-        prefs.getBool(_displayShowUserNameTimestampKey) ?? true;
+        prefs.getBool(_displayShowUserNameTimestampKey) ?? false;
     // new split settings: default to the legacy combined setting value for backward compat
     final legacyUserNameTs = _showUserNameTimestamp;
     _showUserName = prefs.getBool(_displayShowUserNameKey) ?? legacyUserNameTs;
@@ -1008,7 +1008,7 @@ class SettingsProvider extends ChangeNotifier {
         prefs.getBool(_displayShowUserMessageActionsKey) ?? true;
     _showThinkingCards = prefs.getBool(_displayShowThinkingCardsKey) ?? true;
     _hideChatHeaderTitle =
-        prefs.getBool(_displayHideChatHeaderTitleKey) ?? false;
+        prefs.getBool(_displayHideChatHeaderTitleKey) ?? true;
     _chatGlassLevel = ChatGlassLevelX.fromStorage(
       prefs.getInt(_displayChatGlassLevelKey),
     );
@@ -1119,7 +1119,7 @@ class SettingsProvider extends ChangeNotifier {
         _desktopSendShortcut = DesktopSendShortcut.enter;
     }
     _chatFontScale =
-        localPreferences.getDouble(_displayChatFontScaleKey) ?? 1.0;
+        localPreferences.getDouble(_displayChatFontScaleKey) ?? 1.1;
     _autoScrollEnabled = prefs.getBool(_displayAutoScrollEnabledKey) ?? true;
     _chatBackgroundMaskStrength =
         prefs.getDouble(_displayChatBackgroundMaskStrengthKey) ?? 1.0;
@@ -1142,7 +1142,7 @@ class SettingsProvider extends ChangeNotifier {
     }
     _useLayeredSurfaces = prefs.getBool(_displayUseLayeredSurfacesKey) ?? false;
     _useLayeredSheetTiles =
-        prefs.getBool(_displayUseLayeredSheetTilesKey) ?? false;
+        prefs.getBool(_displayUseLayeredSheetTilesKey) ?? true;
     _assistantBubbleFitContent =
         prefs.getBool(_displayAssistantBubbleFitContentKey) ?? false;
     _assistantBubbleSplitParagraphs =

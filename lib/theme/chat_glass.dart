@@ -33,7 +33,8 @@ extension ChatGlassLevelX on ChatGlassLevel {
 
   static ChatGlassLevel fromStorage(int? value) {
     if (value == null || value < 0 || value >= ChatGlassLevel.values.length) {
-      return ChatGlassLevel.standard;
+      // Fresh installs start without glass (the restrained default).
+      return ChatGlassLevel.off;
     }
     return ChatGlassLevel.values[value];
   }
