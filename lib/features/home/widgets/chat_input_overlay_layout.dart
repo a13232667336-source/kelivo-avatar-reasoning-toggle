@@ -19,6 +19,9 @@ class ChatInputOverlayLayout extends StatelessWidget {
   static const double _bottomOverlayFadeHeight = 180;
   // Leaves room for badges riding 12px above the composer's top edge.
   static const double _bottomOverlayTopGap = 12;
+  // The composer plate reaches this far above the input field so its top
+  // hairline does not sit right against the rounded field.
+  static const double _composerPlateLift = 8;
 
   final double topInset;
   final Widget content;
@@ -103,11 +106,16 @@ class ChatInputOverlayLayout extends StatelessWidget {
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
                 // Opaque plate that matches the composer's own box, so the
                 // transcript ends at its top edge rather than fading out over
                 // the 180px above it.
-                Positioned.fill(
+                Positioned(
+                  top: -_composerPlateLift,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
                   child: IgnorePointer(
                     key: const Key('chat-input-overlay-bottom-plate'),
                     child: backgroundImageActive

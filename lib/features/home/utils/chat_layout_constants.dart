@@ -1,5 +1,12 @@
 /// Shared layout constants for the Home chat UI (desktop/tablet).
 class ChatLayoutConstants {
+  /// Height of the chat app bar's toolbar row.
+  ///
+  /// Slightly shorter than [kToolbarHeight]: the icons sit a touch higher and
+  /// the chrome band ends a few pixels earlier, so the transcript is not eaten
+  /// by the top plate. Anything that computes the top inset must use this.
+  static const double chatToolbarHeight = 52.0;
+
   /// Max readable width for the chat message list area.
   static const double maxContentWidth = 860.0;
 

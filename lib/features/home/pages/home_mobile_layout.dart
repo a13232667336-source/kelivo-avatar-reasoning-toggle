@@ -17,6 +17,7 @@ import '../../../core/services/haptics.dart';
 import '../../../shared/animations/widgets.dart';
 import '../../../shared/widgets/ios_tactile.dart';
 import '../../chat/widgets/frosted/chat_frosted_backdrop.dart';
+import '../utils/chat_layout_constants.dart';
 import '../../chat/widgets/chat_assistant_background.dart';
 import '../widgets/assistant_avatar.dart';
 import '../widgets/assistant_entry_actions.dart';
@@ -156,6 +157,7 @@ class HomeMobileScaffold extends StatelessWidget {
     final hideChatHeaderTitle = appBarSettings.hideChatHeaderTitle;
 
     return AppBar(
+      toolbarHeight: ChatLayoutConstants.chatToolbarHeight,
       systemOverlayStyle: (Theme.of(context).brightness == Brightness.dark)
           ? const SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,

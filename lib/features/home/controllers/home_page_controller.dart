@@ -996,7 +996,7 @@ class HomePageController extends ChangeNotifier {
       getAutoScrollEnabled: () =>
           _context.read<SettingsProvider>().autoScrollEnabled,
       getTopRevealInset: () =>
-          kToolbarHeight + MediaQuery.paddingOf(_context).top,
+          ChatLayoutConstants.chatToolbarHeight + MediaQuery.paddingOf(_context).top,
       isGenerating: () => _chatController.isCurrentConversationLoading,
     );
   }
