@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +8,6 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_font_weights.dart';
 import '../../theme/app_semantic_colors.dart';
 import 'ios_tactile.dart';
-import 'package:provider/provider.dart';
-import '../../core/providers/settings_provider.dart';
-import '../../theme/chat_glass.dart';
 
 typedef CustomBottomSheetBuilder =
     Widget Function(BuildContext context, ScrollController scrollController);
@@ -233,9 +229,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
     return ClipRRect(
       key: CustomBottomSheet.panelKey,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      child: _SheetGlassBackdrop(
-        level: context.watch<SettingsProvider>().chatGlassLevel,
-        surface: surface,
+      child: ColoredBox(
+        color: surface,
         child: SafeArea(
           top: false,
           child: Column(
@@ -665,47 +660,6 @@ class _SheetHeader extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Sheet plate.
-///
-/// A sheet is control-layer chrome, so it may carry glass; the rows inside it
-/// stay on the opaque side of the contrast rule. [ChatGlassLevel.off] and
-/// high-contrast mode keep the previous solid fill, and the blur is Flutter's
-/// own [ImageFilter] (no custom shader), which is why it also works on iOS 15.
-class _SheetGlassBackdrop extends StatelessWidget {
-  const _SheetGlassBackdrop({
-    required this.level,
-    required this.surface,
-    required this.child,
-  });
-
-  final ChatGlassLevel level;
-  final Color surface;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (level == ChatGlassLevel.off || MediaQuery.highContrastOf(context)) {
-      return ColoredBox(color: surface, child: child);
-    }
-    final sigma = switch (level) {
-      ChatGlassLevel.light => 12.0,
-      ChatGlassLevel.standard => 18.0,
-      ChatGlassLevel.strong => 26.0,
-      ChatGlassLevel.off => 0.0,
-    };
-    final tint = switch (level) {
-      ChatGlassLevel.light => surface.withValues(alpha: .82),
-      ChatGlassLevel.standard => surface.withValues(alpha: .70),
-      ChatGlassLevel.strong => surface.withValues(alpha: .58),
-      ChatGlassLevel.off => surface,
-    };
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-      child: ColoredBox(color: tint, child: child),
     );
   }
 }
