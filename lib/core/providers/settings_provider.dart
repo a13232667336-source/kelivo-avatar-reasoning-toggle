@@ -1039,7 +1039,8 @@ class SettingsProvider extends ChangeNotifier {
     _showMessageNavButtons = prefs.getBool(_displayShowMessageNavKey) ?? true;
     _mobileMessageNavButtonsMode = _parseMobileMessageNavButtonsMode(
       prefs.getString(_displayMobileMessageNavButtonsModeKey),
-      legacyEnabled: _showMessageNavButtons,
+      // Fresh installs: no floating scroll buttons on the phone.
+      legacyEnabled: false,
     );
     _desktopMessageNavButtonsMode = _parseDesktopMessageNavButtonsMode(
       prefs.getString(_displayDesktopMessageNavButtonsModeKey),
@@ -1140,7 +1141,7 @@ class SettingsProvider extends ChangeNotifier {
     } else {
       _usePureBackground = pureBgPref;
     }
-    _useLayeredSurfaces = prefs.getBool(_displayUseLayeredSurfacesKey) ?? false;
+    _useLayeredSurfaces = prefs.getBool(_displayUseLayeredSurfacesKey) ?? true;
     _useLayeredSheetTiles =
         prefs.getBool(_displayUseLayeredSheetTilesKey) ?? true;
     _assistantBubbleFitContent =
