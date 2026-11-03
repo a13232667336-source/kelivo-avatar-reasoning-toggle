@@ -839,6 +839,7 @@ class _HomePageState extends State<HomePage>
             )
           : null,
       body: _wrapWithDropTarget(_buildMobileBody(context, cs)),
+      onScrollToTop: () => _controller.scrollToTop(),
     );
   }
 

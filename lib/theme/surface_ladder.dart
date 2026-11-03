@@ -72,21 +72,26 @@ class SurfaceLadder {
           Color.alphaBlend(c.withValues(alpha: a), page);
       final card = dark
           ? Color.alphaBlend(
-              white.withValues(alpha: nearBlackPage ? 0.15 : 0.10),
+              white.withValues(alpha: nearBlackPage ? 0.30 : 0.10),
               page,
             )
           : Color.alphaBlend(white.withValues(alpha: 0.96), page);
       final surfaceFill = Color.alphaBlend(
         cs.onSurface.withValues(
-          alpha: dark ? (nearBlackPage ? 0.22 : 0.16) : 0.05,
+          alpha: dark ? (nearBlackPage ? 0.30 : 0.16) : 0.05,
         ),
         page,
       );
+      // On a #000 page every Material container tone collapses to black, so the
+      // card ladder is spelled out here instead of derived from the page.
+      final surfaceCardFill = nearBlackPage
+          ? Color.alphaBlend(white.withValues(alpha: 0.60), page)
+          : surfaceFill;
       return SurfaceLadder(
         page: page,
         card: card,
         surfaceFill: surfaceFill,
-        surfaceCardFill: surfaceFill,
+        surfaceCardFill: surfaceCardFill,
         hairline: cs.outlineVariant.withValues(
           alpha: dark ? (nearBlackPage ? 0.12 : 0.08) : 0.06,
         ),
@@ -94,11 +99,17 @@ class SurfaceLadder {
           alpha: dark ? (nearBlackPage ? 0.34 : 0.26) : 0.38,
         ),
         surfaceContainerLowest: dark ? over(black, 0.28) : over(white, 0.72),
-        surfaceContainerLow: dark ? over(white, 0.03) : over(white, 0.55),
-        surfaceContainer: dark ? over(white, 0.045) : over(white, 0.35),
-        surfaceContainerHigh: dark ? over(white, 0.06) : over(white, 0.85),
+        surfaceContainerLow: dark
+            ? over(white, nearBlackPage ? 0.12 : 0.03)
+            : over(white, 0.55),
+        surfaceContainer: dark
+            ? over(white, nearBlackPage ? 0.18 : 0.045)
+            : over(white, 0.35),
+        surfaceContainerHigh: dark
+            ? over(white, nearBlackPage ? 0.26 : 0.06)
+            : over(white, 0.85),
         surfaceContainerHighest: dark
-            ? over(white, 0.09)
+            ? over(white, nearBlackPage ? 0.34 : 0.09)
             : over(cs.onSurface, 0.05),
       );
     }

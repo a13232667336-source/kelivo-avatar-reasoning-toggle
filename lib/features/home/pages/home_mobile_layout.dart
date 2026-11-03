@@ -54,6 +54,7 @@ class HomeMobileScaffold extends StatelessWidget {
     required this.onOpenGlobalSearchResult,
     this.appBarOverride,
     required this.body,
+    required this.onScrollToTop,
   });
 
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -86,6 +87,9 @@ class HomeMobileScaffold extends StatelessWidget {
   onOpenGlobalSearchResult;
   final PreferredSizeWidget? appBarOverride;
   final Widget body;
+
+  /// Status-bar tap target: iOS scrolls the transcript to its start.
+  final VoidCallback onScrollToTop;
 
   @override
   Widget build(BuildContext context) {
@@ -128,13 +132,29 @@ class HomeMobileScaffold extends StatelessWidget {
       ),
       child: ChatFrostedBackdrop(
         backdrop: const MobileBackgroundLayer(),
-        child: Scaffold(
+        child: Stack(
+          children: [
+            Scaffold(
           key: scaffoldKey,
           resizeToAvoidBottomInset: true,
           extendBodyBehindAppBar: true,
           backgroundColor: Colors.transparent,
-          appBar: appBarOverride ?? _buildAppBar(context, cs),
-          body: body,
+              appBar: appBarOverride ?? _buildAppBar(context, cs),
+              body: body,
+            ),
+            // iOS status-bar tap: sits above the app bar so nothing steals it.
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: MediaQuery.paddingOf(context).top,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onScrollToTop,
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ],
         ),
       ),
     );

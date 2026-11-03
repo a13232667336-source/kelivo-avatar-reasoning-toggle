@@ -153,15 +153,12 @@ class _AppSnackBarOverlayState extends State<AppSnackBarOverlay> {
     return Stack(
       children: [
         widget.child,
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
+        Positioned.fill(
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Stack(
-                alignment: Alignment.bottomCenter,
+                alignment: Alignment.center,
                 children: [
                   for (
                     int i = math.min(
@@ -376,7 +373,7 @@ class _NotificationWidgetState extends State<NotificationWidget>
           ),
         child: Container(
           margin: const EdgeInsets.only(bottom: 6),
-          constraints: const BoxConstraints(maxWidth: 230),
+          constraints: const BoxConstraints(maxWidth: 150),
           decoration: BoxDecoration(
             color: cs.surfaceContainerHigh.withValues(alpha: 0.98),
             // color: cs.surface.withValues(alpha: 0.98),
