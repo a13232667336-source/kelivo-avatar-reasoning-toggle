@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'
     show Theme; // for Material color scheme primary
 import '../../core/services/haptics.dart';
+import '../../theme/motion.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/settings_provider.dart';
 
@@ -22,7 +23,7 @@ class IosSwitch extends StatefulWidget {
     this.enableHaptics = true,
     this.semanticLabel,
     this.animationDuration = const Duration(milliseconds: 220),
-    this.animationCurve = Curves.easeOutCubic,
+    this.animationCurve,
     this.hitTestSize = 44,
   });
 
@@ -46,7 +47,8 @@ class IosSwitch extends StatefulWidget {
 
   // Animation
   final Duration animationDuration;
-  final Curve animationCurve;
+  /// Springs by default; pass a curve to opt out.
+  final Curve? animationCurve;
 
   @override
   State<IosSwitch> createState() => _IosSwitchState();
@@ -59,6 +61,7 @@ class _IosSwitchState extends State<IosSwitch> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final Curve curve = widget.animationCurve ?? AppMotion.interactiveColorCurve;
     // Prefer Material color scheme primary to better match app theme; fall back to Cupertino default
     final primary = widget.activeColor ?? cs.primary;
 
@@ -136,15 +139,16 @@ class _IosSwitchState extends State<IosSwitch> {
           child: Center(
             child: AnimatedScale(
               scale: pressScale,
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : const Duration(milliseconds: 100),
-              curve: Curves.easeOut,
+              duration: AppMotion.scaleDuration(
+                MediaQuery.disableAnimationsOf(context),
+                AppMotion.press,
+              ),
+              curve: AppMotion.pressCurve,
               child: AnimatedContainer(
                 duration: MediaQuery.disableAnimationsOf(context)
                     ? Duration.zero
                     : widget.animationDuration,
-                curve: widget.animationCurve,
+                curve: curve,
                 width: widget.width,
                 height: widget.height,
                 padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
@@ -156,7 +160,7 @@ class _IosSwitchState extends State<IosSwitch> {
                       duration: MediaQuery.disableAnimationsOf(context)
                           ? Duration.zero
                           : widget.animationDuration,
-                      curve: widget.animationCurve,
+                      curve: curve,
                       alignment: widget.value
                           ? Alignment.centerRight
                           : Alignment.centerLeft,
