@@ -7,7 +7,6 @@ import '../../icons/lucide_adapter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_font_weights.dart';
 import '../../theme/app_semantic_colors.dart';
-import '../../theme/motion.dart';
 import 'ios_tactile.dart';
 
 typedef CustomBottomSheetBuilder =
@@ -527,8 +526,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
 
   void _animateToTop(
     double targetTop, {
-    Duration duration = AppMotion.panel,
-    Curve? curve,
+    Duration duration = const Duration(milliseconds: 220),
+    Curve curve = Curves.easeOutCubic,
     VoidCallback? onComplete,
   }) {
     final current = _currentTop(targetTop);
@@ -542,12 +541,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
     _topAnimation = Tween<double>(
       begin: current,
       end: targetTop,
-    ).animate(
-      CurvedAnimation(
-        parent: _sheetAnimationController,
-        curve: curve ?? AppMotion.panelCurve,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _sheetAnimationController, curve: curve));
     _animationComplete = onComplete;
     _sheetAnimationController.duration = duration;
     _sheetAnimationController.forward(from: 0);

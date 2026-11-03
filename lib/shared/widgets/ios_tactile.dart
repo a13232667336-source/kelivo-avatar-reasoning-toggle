@@ -5,10 +5,8 @@ import 'package:provider/provider.dart';
 import '../../core/providers/settings_provider.dart';
 import '../../core/services/haptics.dart';
 import 'package:Kelivo/theme/app_semantic_colors.dart';
-import '../../theme/motion.dart';
 
-/// iOS-style icon button: no ripple, spring colour tween plus a light press
-/// scale, so a tap reads as physical instead of a flat colour swap.
+/// iOS-style icon button: no ripple, color tween on press, no scale.
 class IosIconButton extends StatefulWidget {
   const IosIconButton({
     super.key,
@@ -28,7 +26,6 @@ class IosIconButton extends StatefulWidget {
     this.enabled = true,
     this.focusNode,
     this.mouseCursor = SystemMouseCursors.click,
-    this.pressedScale = 0.92,
   }) : assert(
          icon != null || builder != null,
          'Either icon or builder must be provided',
@@ -54,9 +51,6 @@ class IosIconButton extends StatefulWidget {
   final FocusNode? focusNode;
   final MouseCursor mouseCursor;
 
-  /// Scale applied while the button is held down. `1.0` disables it.
-  final double pressedScale;
-
   @override
   State<IosIconButton> createState() => _IosIconButtonState();
 }
@@ -68,12 +62,6 @@ class _IosIconButtonState extends State<IosIconButton> {
 
   bool get _interactive =>
       widget.enabled && (widget.onTap != null || widget.onLongPress != null);
-
-  void _handleTap() {
-    if (widget.onTap == null) return;
-    if (context.read<SettingsProvider>().hapticsOnCardTap) Haptics.soft();
-    widget.onTap!.call();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +94,8 @@ class _IosIconButtonState extends State<IosIconButton> {
       tween: ColorTween(end: target),
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
-          : AppMotion.snappy,
-      curve: AppMotion.snappyColorCurve,
+          : const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
       builder: (context, color, _) {
         final c = color ?? base;
         if (widget.builder != null) {
@@ -152,7 +140,7 @@ class _IosIconButtonState extends State<IosIconButton> {
               : null,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: widget.enabled ? _handleTap : null,
+            onTap: widget.enabled ? widget.onTap : null,
             onLongPress: widget.enabled && widget.onLongPress != null
                 ? widget.onLongPress
                 : null,
@@ -166,38 +154,30 @@ class _IosIconButtonState extends State<IosIconButton> {
               child: Center(
                 widthFactor: 1,
                 heightFactor: 1,
-                child: AnimatedScale(
-                  scale: _pressed ? widget.pressedScale : 1.0,
-                  duration: AppMotion.scaleDuration(
-                    MediaQuery.disableAnimationsOf(context),
-                    AppMotion.press,
+                child: AnimatedContainer(
+                  constraints:
+                      widget.visualSize == null && widget.minSize != null
+                      ? BoxConstraints(
+                          minWidth: widget.minSize!,
+                          minHeight: widget.minSize!,
+                        )
+                      : null,
+                  width: widget.visualSize,
+                  height: widget.visualSize,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 160),
+                  curve: Curves.easeOutCubic,
+                  decoration: BoxDecoration(
+                    color: bgTarget,
+                    borderRadius: BorderRadius.circular(widget.borderRadius),
                   ),
-                  curve: AppMotion.pressCurve,
-                  child: AnimatedContainer(
-                    constraints:
-                        widget.visualSize == null && widget.minSize != null
-                        ? BoxConstraints(
-                            minWidth: widget.minSize!,
-                            minHeight: widget.minSize!,
-                          )
-                        : null,
-                    width: widget.visualSize,
-                    height: widget.visualSize,
-                    duration: MediaQuery.disableAnimationsOf(context)
-                        ? Duration.zero
-                        : AppMotion.snappy,
-                    curve: AppMotion.snappyColorCurve,
-                    decoration: BoxDecoration(
-                      color: bgTarget,
-                      borderRadius: BorderRadius.circular(widget.borderRadius),
-                    ),
-                    child: Padding(
-                      padding: widget.padding,
-                      child: Center(
-                        widthFactor: 1,
-                        heightFactor: 1,
-                        child: child,
-                      ),
+                  child: Padding(
+                    padding: widget.padding,
+                    child: Center(
+                      widthFactor: 1,
+                      heightFactor: 1,
+                      child: child,
                     ),
                   ),
                 ),
@@ -243,8 +223,7 @@ class _IosIconButtonState extends State<IosIconButton> {
   }
 }
 
-/// iOS-style card press effect: spring colour wash plus a very light press
-/// scale, no ripple.
+/// iOS-style card press effect: background color tween on press, no ripple, no scale.
 class IosCardPress extends StatefulWidget {
   const IosCardPress({
     super.key,
@@ -274,7 +253,7 @@ class IosCardPress extends StatefulWidget {
   // 0..1; how much to blend towards surface tint on press
   final double? pressedBlendStrength;
   final EdgeInsetsGeometry? padding;
-  // Optional press scale. Defaults to 0.99; pass 1.0 to keep the card flat.
+  // Optional subtle scale when pressed (e.g., 0.98). Defaults to 1.0 (no scale).
   final double? pressedScale;
   // Optional custom animation duration for color/scale tween.
   final Duration? duration;
@@ -397,8 +376,8 @@ class _IosCardPressState extends State<IosCardPress> {
     final Color target = _pressed
         ? pressTarget
         : (_hovered || _focused ? hoverTarget : base);
-    final double scale = _pressed ? (widget.pressedScale ?? 0.99) : 1.0;
-    final Duration dur = widget.duration ?? AppMotion.snappy;
+    final double scale = _pressed ? (widget.pressedScale ?? 1.0) : 1.0;
+    final Duration dur = widget.duration ?? const Duration(milliseconds: 200);
     final omitScale = (widget.pressedScale ?? 1.0) == 1.0;
     final omitColor = widget.pressedBlendStrength == 0;
 
@@ -420,7 +399,7 @@ class _IosCardPressState extends State<IosCardPress> {
     } else {
       painted = AnimatedContainer(
         duration: dur,
-        curve: AppMotion.snappyColorCurve,
+        curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
           color: target,
           borderRadius: widget.borderRadius ?? BorderRadius.circular(12),
@@ -432,11 +411,8 @@ class _IosCardPressState extends State<IosCardPress> {
     if (!omitScale) {
       painted = AnimatedScale(
         scale: scale,
-        duration: AppMotion.scaleDuration(
-          MediaQuery.disableAnimationsOf(context),
-          widget.duration ?? AppMotion.press,
-        ),
-        curve: AppMotion.pressCurve,
+        duration: dur,
+        curve: Curves.easeOutCubic,
         child: painted,
       );
     }
