@@ -234,7 +234,7 @@ class FileUploadService {
       if (croppedFiles.isEmpty) return;
       final annotated = await _maybeAnnotateImages(croppedFiles);
       if (!context.mounted) return;
-      _enqueuePickedImages(edited, target);
+      _enqueuePickedImages(annotated, target);
     } catch (e) {
       try {
         if (!context.mounted) return;
