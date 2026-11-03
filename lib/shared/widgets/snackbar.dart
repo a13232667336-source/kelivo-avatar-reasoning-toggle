@@ -154,14 +154,14 @@ class _AppSnackBarOverlayState extends State<AppSnackBarOverlay> {
       children: [
         widget.child,
         Positioned(
-          top: 0,
+          bottom: 0,
           left: 0,
           right: 0,
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Stack(
-                alignment: Alignment.topCenter,
+                alignment: Alignment.bottomCenter,
                 children: [
                   for (
                     int i = math.min(
@@ -205,10 +205,10 @@ class _AppSnackBarOverlayState extends State<AppSnackBarOverlay> {
         final slideValue = entry.slideAnimation?.value ?? Offset.zero;
 
         return Transform.translate(
-          offset: Offset(0, baseOffset + slideValue.dy * 100),
+          offset: Offset(0, -(baseOffset + slideValue.dy * 100)),
           child: Transform.scale(
             scale: scaleValue,
-            alignment: Alignment.topCenter,
+            alignment: Alignment.bottomCenter,
             child: Opacity(
               opacity: opacity,
               child: NotificationWidget(
@@ -375,32 +375,32 @@ class _NotificationWidgetState extends State<NotificationWidget>
             1.0,
           ),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          constraints: const BoxConstraints(maxWidth: 400),
+          margin: const EdgeInsets.only(bottom: 6),
+          constraints: const BoxConstraints(maxWidth: 230),
           decoration: BoxDecoration(
             color: cs.surfaceContainerHigh.withValues(alpha: 0.98),
             // color: cs.surface.withValues(alpha: 0.98),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(11),
             boxShadow: [
               BoxShadow(
                 color: cs.shadow.withValues(alpha: isDark ? 0.3 : 0.1),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(11),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: Row(
                 children: [
                   Icon(
                     _getIcon(),
-                    size: 22,
+                    size: 14,
                     color: _getIconColor(cs, context.appColors),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       widget.notification.message,
@@ -408,10 +408,10 @@ class _NotificationWidgetState extends State<NotificationWidget>
                           (Theme.of(context).textTheme.bodyMedium ??
                                   TextStyle())
                               .copyWith(
-                                fontSize: 15,
+                                fontSize: 12,
                                 fontWeight: AppFontWeights.medium,
                                 color: cs.onSurface,
-                                height: 1.3,
+                                height: 1.2,
                                 decoration: TextDecoration.none,
                               ),
                     ),

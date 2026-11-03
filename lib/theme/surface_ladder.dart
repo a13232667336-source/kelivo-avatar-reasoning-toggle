@@ -59,6 +59,11 @@ class SurfaceLadder {
   factory SurfaceLadder.fromScheme(ColorScheme cs, {bool layered = false}) {
     final page = cs.surface;
     final dark = cs.brightness == Brightness.dark;
+    // A pure-black page (#000, e.g. the Grok mono skin) has no headroom for the
+    // tone-shift ladder and swamps alpha lifts, so cards read as invisible.
+    // Give such pages the alpha ladder with a stronger lift instead.
+    final nearBlackPage = dark && page.computeLuminance() < 0.02;
+    if (nearBlackPage) layered = false;
 
     if (!layered) {
       const white = Color(0xFFFFFFFF);
@@ -66,10 +71,15 @@ class SurfaceLadder {
       Color over(Color c, double a) =>
           Color.alphaBlend(c.withValues(alpha: a), page);
       final card = dark
-          ? Color.alphaBlend(white.withValues(alpha: 0.10), page)
+          ? Color.alphaBlend(
+              white.withValues(alpha: nearBlackPage ? 0.15 : 0.10),
+              page,
+            )
           : Color.alphaBlend(white.withValues(alpha: 0.96), page);
       final surfaceFill = Color.alphaBlend(
-        cs.onSurface.withValues(alpha: dark ? 0.16 : 0.05),
+        cs.onSurface.withValues(
+          alpha: dark ? (nearBlackPage ? 0.22 : 0.16) : 0.05,
+        ),
         page,
       );
       return SurfaceLadder(
@@ -77,8 +87,12 @@ class SurfaceLadder {
         card: card,
         surfaceFill: surfaceFill,
         surfaceCardFill: surfaceFill,
-        hairline: cs.outlineVariant.withValues(alpha: dark ? 0.08 : 0.06),
-        hairlineStrong: cs.outlineVariant.withValues(alpha: dark ? 0.26 : 0.38),
+        hairline: cs.outlineVariant.withValues(
+          alpha: dark ? (nearBlackPage ? 0.12 : 0.08) : 0.06,
+        ),
+        hairlineStrong: cs.outlineVariant.withValues(
+          alpha: dark ? (nearBlackPage ? 0.34 : 0.26) : 0.38,
+        ),
         surfaceContainerLowest: dark ? over(black, 0.28) : over(white, 0.72),
         surfaceContainerLow: dark ? over(white, 0.03) : over(white, 0.55),
         surfaceContainer: dark ? over(white, 0.045) : over(white, 0.35),

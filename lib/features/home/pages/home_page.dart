@@ -856,6 +856,7 @@ class _HomePageState extends State<HomePage>
           ? const ChatAssistantBackground(expand: false, pinnedToBackdrop: true)
           : null,
       backgroundImageActive: backgroundImageActive,
+      onStatusBarTap: () => _controller.scrollToTop(),
       content: Builder(
         builder: (context) {
           final content = KeyedSubtree(
@@ -1047,6 +1048,7 @@ class _HomePageState extends State<HomePage>
             )
           : null,
       backgroundImageActive: backgroundImageActive,
+      onStatusBarTap: () => _controller.scrollToTop(),
       content: FadeTransition(
         opacity: _controller.convoFade,
         child: _wrapMessageJumpTransition(

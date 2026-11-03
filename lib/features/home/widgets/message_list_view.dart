@@ -1799,6 +1799,9 @@ class _MessageListViewState extends State<MessageListView> {
                     ? 1
                     : _effectiveRenderModels.length,
                 keyboardDismissBehavior: _keyboardDismissBehavior,
+                // iOS keeps a short transcript draggable: content shorter than
+                // the viewport still rubber-bands instead of being frozen.
+                physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   if (_effectiveRenderModels.isEmpty && _hasFooter) {
                     return widget.footer!;

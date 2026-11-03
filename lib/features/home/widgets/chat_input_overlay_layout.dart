@@ -13,6 +13,7 @@ class ChatInputOverlayLayout extends StatelessWidget {
     this.topBackground,
     this.foreground,
     this.backgroundImageActive = false,
+    this.onStatusBarTap,
   });
 
   static const double _topOverlayTailHeight = 16;
@@ -29,6 +30,10 @@ class ChatInputOverlayLayout extends StatelessWidget {
   final Widget? topBackground;
   final Widget? foreground;
   final bool backgroundImageActive;
+
+  /// Tapping the status-bar / app-bar strip scrolls the transcript to its
+  /// start, the way a system status-bar tap does on iOS.
+  final VoidCallback? onStatusBarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +71,15 @@ class ChatInputOverlayLayout extends StatelessWidget {
                   right: 0,
                   top: 0,
                   height: topInset,
-                  child: IgnorePointer(
+                  child: GestureDetector(
                     key: const Key('chat-input-overlay-top-fade'),
-                    child: AppGlassSurface(
-                      level: context.watch<SettingsProvider>().chatGlassLevel,
-                      edge: GlassPlateEdge.bottom,
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onStatusBarTap,
+                    child: IgnorePointer(
+                      child: AppGlassSurface(
+                        level: context.watch<SettingsProvider>().chatGlassLevel,
+                        edge: GlassPlateEdge.bottom,
+                      ),
                     ),
                   ),
                 ),
