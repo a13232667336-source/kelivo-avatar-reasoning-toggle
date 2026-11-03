@@ -29,6 +29,7 @@ class ThemePalettes {
   static const String terracottaId = 'terracotta';
   static const String monochromeId = 'monochrome';
   static const String docThemeId = 'doc_theme';
+  static const String grokId = 'grok_mono';
 
   static const ThemePalette defaultPalette = ThemePalette(
     id: defaultId,
@@ -564,6 +565,75 @@ class ThemePalettes {
     ),
   );
 
+  // Grok-style skin: pure black (OLED真熄灯) / near-white, single monochrome
+  // accent, hairline-only separation. Pair it with glass off — on #000 there is
+  // no light to refract, and glass would read as a grey smudge.
+  static const ThemePalette grok = ThemePalette(
+    id: grokId,
+    zhName: 'Grok 极黑',
+    enName: 'Grok Mono',
+    light: ColorScheme(
+      brightness: Brightness.light,
+      primary: Color(0xFF0A0A0A),
+      onPrimary: Color(0xFFFFFFFF),
+      primaryContainer: Color(0xFFF0F1F3),
+      onPrimaryContainer: Color(0xFF0A0A0A),
+      secondary: Color(0xFF3A3A3C),
+      onSecondary: Color(0xFFFFFFFF),
+      secondaryContainer: Color(0xFFF2F3F5),
+      onSecondaryContainer: Color(0xFF0A0A0A),
+      tertiary: Color(0xFF1C1C1E),
+      onTertiary: Color(0xFFFFFFFF),
+      tertiaryContainer: Color(0xFFEDEEF0),
+      onTertiaryContainer: Color(0xFF0A0A0A),
+      error: Color(0xFFD70015),
+      onError: Color(0xFFFFFFFF),
+      errorContainer: Color(0xFFFFE5E5),
+      onErrorContainer: Color(0xFF3B0004),
+      surface: Color(0xFFF7F8FA),
+      onSurface: Color(0xFF0A0A0A),
+      onSurfaceVariant: Color(0xFF6B6B70),
+      outline: Color(0x14000000),
+      outlineVariant: Color(0x0F000000),
+      shadow: Color(0xFF000000),
+      scrim: Color(0xFF000000),
+      inverseSurface: Color(0xFF0A0A0A),
+      onInverseSurface: Color(0xFFF7F8FA),
+      inversePrimary: Color(0xFF0A0A0A),
+      surfaceTint: Color(0xFF0A0A0A),
+    ),
+    dark: ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFF5F5F7),
+      onPrimary: Color(0xFF000000),
+      primaryContainer: Color(0xFF1C1C1E),
+      onPrimaryContainer: Color(0xFFF5F5F7),
+      secondary: Color(0xFFAEAEB2),
+      onSecondary: Color(0xFF000000),
+      secondaryContainer: Color(0xFF141416),
+      onSecondaryContainer: Color(0xFFF5F5F7),
+      tertiary: Color(0xFF8E8E93),
+      onTertiary: Color(0xFF000000),
+      tertiaryContainer: Color(0xFF101012),
+      onTertiaryContainer: Color(0xFFF5F5F7),
+      error: Color(0xFFFF453A),
+      onError: Color(0xFF000000),
+      errorContainer: Color(0xFF2B0A08),
+      onErrorContainer: Color(0xFFFF453A),
+      surface: Color(0xFF000000),
+      onSurface: Color(0xFFEDEDED),
+      onSurfaceVariant: Color(0xFF8E8E93),
+      outline: Color(0x24FFFFFF),
+      outlineVariant: Color(0x14FFFFFF),
+      shadow: Color(0xFF000000),
+      scrim: Color(0xFF000000),
+      inverseSurface: Color(0xFFF7F8FA),
+      onInverseSurface: Color(0xFF0A0A0A),
+      inversePrimary: Color(0xFFFFFFFF),
+      surfaceTint: Color(0x00FFFFFF),
+    ),
+  );
+
   // New: Document Theme palette based on provided spec
   static const ThemePalette docTheme = ThemePalette(
     id: docThemeId,
@@ -639,6 +709,7 @@ class ThemePalettes {
     smokyRose,
     terracotta,
     monochrome,
+    grok,
     docTheme,
   ];
 

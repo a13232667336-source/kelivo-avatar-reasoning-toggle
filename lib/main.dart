@@ -5,6 +5,7 @@ import 'package:Kelivo/core/services/sandbox/workspace_channel.dart';
 import 'package:Kelivo/core/providers/external_mounts_provider.dart';
 import 'package:Kelivo/core/services/sandbox/environment_dependencies.dart';
 import 'package:flutter/material.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:flutter/foundation.dart'
     show debugPrint, kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'dart:async';
@@ -220,6 +221,10 @@ Future<void> main() async {
   await runZoned(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      // Warm the optical-glass shaders off the critical path: the chat chrome
+      // can be glass on the very first frame, and loading bytecode lazily there
+      // would show an unrefracted plate for a beat.
+      unawaited(LiquidGlassWidgets.initialize());
       WindowsPasteFix.instance.install();
       AndroidImeSelection.instance.install();
       // Register notification tap handling for every Android launch. This is

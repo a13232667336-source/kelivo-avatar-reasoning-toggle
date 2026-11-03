@@ -2,6 +2,7 @@ import '../widgets/settings_search_target.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'mobile_background_settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' show CupertinoSlidingSegmentedControl;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../icons/lucide_adapter.dart';
@@ -14,6 +15,7 @@ import 'image_settings_page.dart';
 import 'message_style_settings_page.dart';
 import 'theme_settings_page.dart';
 import '../../../theme/palettes.dart';
+import '../../../theme/chat_glass.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/ios_switch.dart';
 import '../../../shared/widgets/tip_icon.dart';
@@ -1138,6 +1140,70 @@ Widget _iosNavRow(
   return SettingsSearchTarget.wrap(context, label, row);
 }
 
+Widget _chatGlassRow(BuildContext context, SettingsProvider sp) {
+  final cs = Theme.of(context).colorScheme;
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Lucide.Sparkles,
+              size: 18,
+              color: cs.onSurface.withValues(alpha: 0.85),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '玻璃质感',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: cs.onSurface.withValues(alpha: 0.9),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        CupertinoSlidingSegmentedControl<ChatGlassLevel>(
+          groupValue: sp.chatGlassLevel,
+          backgroundColor: cs.onSurface.withValues(alpha: 0.06),
+          thumbColor: cs.surface,
+          children: {
+            for (final level in ChatGlassLevel.values)
+              level: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                child: Text(
+                  level.labelZh,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: cs.onSurface.withValues(alpha: 0.9),
+                  ),
+                ),
+              ),
+          },
+          onValueChanged: (value) {
+            if (value == null) return;
+            context.read<SettingsProvider>().setChatGlassLevel(value);
+          },
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '只作用于顶部栏和输入框，聊天内容始终不透明；关掉即回到纯色',
+          style: TextStyle(
+            fontSize: 11.5,
+            color: cs.onSurface.withValues(alpha: 0.55),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 Widget _iosSwitchRow(
   BuildContext context, {
   IconData? icon,
@@ -1454,6 +1520,8 @@ class ChatItemDisplaySettingsPage extends StatelessWidget {
                 onChanged: (v) =>
                     context.read<SettingsProvider>().setHideChatHeaderTitle(v),
               ),
+              _iosDivider(context),
+              _chatGlassRow(context, sp),
               _iosDivider(context),
               _iosSwitchRow(
                 context,

@@ -44,6 +44,7 @@ import '../services/backup/backup_cancel_token.dart';
 import '../services/memory/memory_prompts.dart';
 import '../services/memory/memory_trace.dart';
 import '../../theme/palettes.dart';
+import '../../theme/chat_glass.dart';
 import '../../theme/custom_theme.dart';
 import '../../theme/chat_bubble_style.dart';
 import '../models/tool_schema_override.dart';
@@ -213,6 +214,8 @@ class SettingsProvider extends ChangeNotifier {
       'display_show_thinking_cards_v1';
   static const String _displayHideChatHeaderTitleKey =
       'display_hide_chat_header_title_v1';
+  static const String _displayChatGlassLevelKey =
+      'display_chat_glass_level_v1';
   static const String _displayShowToolCardsKey = 'display_show_tool_cards_v1';
   static const String _displayShowProducedFilesKey =
       'display_show_produced_files_v1';
@@ -1006,6 +1009,9 @@ class SettingsProvider extends ChangeNotifier {
     _showThinkingCards = prefs.getBool(_displayShowThinkingCardsKey) ?? true;
     _hideChatHeaderTitle =
         prefs.getBool(_displayHideChatHeaderTitleKey) ?? false;
+    _chatGlassLevel = ChatGlassLevelX.fromStorage(
+      prefs.getInt(_displayChatGlassLevelKey),
+    );
     _showToolCards = prefs.getBool(_displayShowToolCardsKey) ?? true;
     _showProducedFiles = prefs.getBool(_displayShowProducedFilesKey) ?? true;
     _showReasoningLevelBadge =
@@ -4709,6 +4715,18 @@ Requirements:
     await prefs.setBool(_displayHideChatHeaderTitleKey, v);
   }
 
+  // Display: optical glass intensity for the chat chrome (app bar band and
+  // composer plate). "Restrained" by design — message content stays opaque.
+  ChatGlassLevel _chatGlassLevel = ChatGlassLevel.standard;
+  ChatGlassLevel get chatGlassLevel => _chatGlassLevel;
+  Future<void> setChatGlassLevel(ChatGlassLevel v) async {
+    if (_chatGlassLevel == v) return;
+    _chatGlassLevel = v;
+    notifyListeners();
+    final prefs = _preferences;
+    await prefs.setInt(_displayChatGlassLevelKey, v.storageValue);
+  }
+
   // Runtime-only "clean reading" gate toggled by tapping the assistant avatar
   // in a chat message header. It never rewrites the persisted display
   // preferences: it just masks them so the thinking / tool cards vanish from
@@ -5905,6 +5923,7 @@ Requirements:
     copy._showModelTimestamp = _showModelTimestamp;
     copy._showThinkingCards = _showThinkingCards;
     copy._hideChatHeaderTitle = _hideChatHeaderTitle;
+    copy._chatGlassLevel = _chatGlassLevel;
     copy._showToolCards = _showToolCards;
     copy._showProducedFiles = _showProducedFiles;
     copy._showReasoningLevelBadge = _showReasoningLevelBadge;

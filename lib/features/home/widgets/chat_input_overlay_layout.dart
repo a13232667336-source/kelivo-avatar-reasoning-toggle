@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../core/providers/settings_provider.dart';
+import '../../../shared/widgets/app_glass_surface.dart';
 
 class ChatInputOverlayLayout extends StatelessWidget {
   const ChatInputOverlayLayout({
@@ -61,8 +65,9 @@ class ChatInputOverlayLayout extends StatelessWidget {
                   height: topInset,
                   child: IgnorePointer(
                     key: const Key('chat-input-overlay-top-fade'),
-                    child: ColoredBox(
-                      color: Theme.of(context).colorScheme.surface,
+                    child: AppGlassSurface(
+                      level: context.watch<SettingsProvider>().chatGlassLevel,
+                      edge: GlassPlateEdge.bottom,
                     ),
                   ),
                 ),
@@ -107,8 +112,10 @@ class ChatInputOverlayLayout extends StatelessWidget {
                     key: const Key('chat-input-overlay-bottom-plate'),
                     child: backgroundImageActive
                         ? const _BottomOverlayFade()
-                        : ColoredBox(
-                            color: Theme.of(context).colorScheme.surface,
+                        : AppGlassSurface(
+                            level:
+                                context.watch<SettingsProvider>().chatGlassLevel,
+                            edge: GlassPlateEdge.top,
                           ),
                   ),
                 ),
