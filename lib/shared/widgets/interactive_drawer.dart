@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../core/services/haptics.dart';
 
 /// Drawer placement side.
 enum DrawerSide { left, right }
@@ -47,11 +48,13 @@ class InteractiveDrawerController extends ChangeNotifier {
 
   /// Open with fling-like motion (positive velocity).
   Future<void> open({double velocity = 2.0}) async {
+    Haptics.soft();
     _requireAttached().fling(velocity: velocity.abs());
   }
 
   /// Close with fling-like motion (negative velocity).
   Future<void> close({double velocity = -2.0}) async {
+    Haptics.soft();
     _requireAttached().fling(velocity: -velocity.abs());
   }
 
@@ -285,9 +288,19 @@ class _InteractiveDrawerState extends State<InteractiveDrawer>
       1.0,
     );
 
+    // iOS sheet-style reveal: the content recedes (scale + rounded corners)
+    // while the drawer slides over it, instead of sliding sideways alone.
+    final double progress = _anim.value;
+    final double contentScale = 1 - 0.06 * progress;
+    final double contentRadius = 22 * progress;
+
     return Transform.translate(
       offset: Offset(dx, 0),
-      child: GestureDetector(
+      child: Transform.scale(
+        scale: contentScale,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(contentRadius),
+          child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onHorizontalDragStart: _onDragStart,
         onHorizontalDragUpdate: _onDragUpdate,
@@ -321,6 +334,8 @@ class _InteractiveDrawerState extends State<InteractiveDrawer>
                 ),
               ),
           ],
+        ),
+      ),
         ),
       ),
     );
